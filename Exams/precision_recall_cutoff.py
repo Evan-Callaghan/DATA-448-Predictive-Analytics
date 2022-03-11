@@ -33,6 +33,6 @@ def precision_recall_cutoff(Y_test, Y_pred):
     ## Changing likelihoods to labels 
     pred_label = np.where(Y_pred < precision_recall['cutoff'][0], 0, 1)
     
-    return pred_label
+    return pred_label, precision_recall['cutoff'][0]
     
     
