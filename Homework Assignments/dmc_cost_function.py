@@ -21,7 +21,7 @@ def cost_function(Y_true, Y_preds):
         
         ## Computing confusion matrix and scoring based on description
         X = confusion_matrix(Y_label, Y_true)
-        results.at[i, 'cost'] = (0 * X[0, 0]) + (-25 * X[1, 0]) - (5 * X[0, 1]) + (5 * X[1, 1])
+        results.at[i, 'cost'] = (0 * X[0, 0]) - (25 * X[1, 0]) - (5 * X[0, 1]) + (5 * X[1, 1])
         
     ## Sorting results 
     results = results.sort_values(by = 'cost', ascending = False).reset_index(drop = True)
