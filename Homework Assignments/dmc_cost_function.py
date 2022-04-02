@@ -38,15 +38,15 @@ def cost_function_cutoff(Y_true, Y_pred):
     for i in range(0, results.shape[0]):
         
         ## Changing likelihoods to labels
-        Y_pred_lab = np.where(Y_pred < results['cutoffs'][i], 0, 1)
+        Y_pred_lab = np.where(Y_pred < results.at[i, 'cutoffs'], 0, 1)
         
         ## Computing confusion matrix and scoring based on description
         X = confusion_matrix(Y_pred_lab, Y_true)
-        results['cost'][i] = -1500 * X[1, 0] - 1000 * X[0, 1] + 500 * X[1, 1]
+        results.at[i, 'cost'] = (0 * X[0, 0]) - (25 * X[1, 0]) - (5 * X[0, 1]) + (5 * X[1, 1])
         
     ## Sorting results 
     results = results.sort_values(by = 'cost', ascending = False).reset_index(drop = True)
     
-    return results['cutoffs'][0]
+    return results.at[0, 'cutoffs']
 
 
