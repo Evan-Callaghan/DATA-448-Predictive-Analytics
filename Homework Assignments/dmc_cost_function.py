@@ -20,7 +20,7 @@ def cost_function(Y_true, Y_preds):
         Y_label = np.where(Y_preds < results.at[i, 'cutoffs'], 0, 1)
         
         ## Computing confusion matrix and scoring based on description
-        X = confusion_matrix(Y_label, Y_true)
+        X = confusion_matrix(Y_true, Y_label)
         results.at[i, 'cost'] = (0 * X[0, 0]) - (25 * X[1, 0]) - (5 * X[0, 1]) + (5 * X[1, 1])
         
     ## Sorting results 
@@ -41,7 +41,7 @@ def cost_function_cutoff(Y_true, Y_pred):
         Y_pred_lab = np.where(Y_pred < results.at[i, 'cutoffs'], 0, 1)
         
         ## Computing confusion matrix and scoring based on description
-        X = confusion_matrix(Y_pred_lab, Y_true)
+        X = confusion_matrix(Y_true, Y_pred_lab)
         results.at[i, 'cost'] = (0 * X[0, 0]) - (25 * X[1, 0]) - (5 * X[0, 1]) + (5 * X[1, 1])
         
     ## Sorting results 
