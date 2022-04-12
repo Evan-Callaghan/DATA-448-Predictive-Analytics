@@ -15,7 +15,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.svm import SVC
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.ensemble import RandomForestClassifier, AdaBoostClassifier, GradientBoostingClassifier
-pd.set_option('display.max_columns', 50)
+pd.set_option('display.max_columns', 100)
 
 ## --------------------------------------
 
@@ -40,17 +40,6 @@ file_content_stream2 = file_object2.get('Body')
 train = pd.read_csv(file_content_stream)
 test = pd.read_csv(file_content_stream2)
 
-## Printing the first five observations
-print(train.head())
-
-## --------------------------------------
-
-## Defining the input and target variables
-X = train.drop(columns = ['Diabetes_012'])
-Y = train['Diabetes_012']
-
-## Splitting the data into training, validation, and testing sets
-X_training, X_validation, Y_training, Y_validation = train_test_split(X, Y, test_size = 0.2, stratify = Y)
 
 ## --------------------------------------
 
@@ -65,27 +54,15 @@ train['BMI_Obese'] = np.where(train['BMI'] >= 30, 1, 0)
 ## Log(BMI)
 train['Log_BMI'] = np.log(train['BMI'])
 
-## Creating dummy variables for Sex, Education, and Income
-train = pd.concat([train.drop(columns = ['Sex']), pd.get_dummies(train['Sex'])], axis = 1)
-train = train.rename(columns = { 0: 'Female', 1: 'Male'})
+## Creating dummy variables for Education, and Income
 
 train = pd.concat([train.drop(columns = ['Education']), pd.get_dummies(train['Education'])], axis = 1)
-train = train.rename(columns = { 0: 'Never_Attended', 1: 'Grades_1_8', 3: 'Grades_9_11', 4: 'GED', 5: 'College_1_3', 
+train = train.rename(columns = { 1: 'Never_Attended', 2: 'Grades_1_8', 3: 'Grades_9_11', 4: 'GED', 5: 'College_1_3', 
                               6: 'College_4+'})
 
 train = pd.concat([train.drop(columns = ['Income']), pd.get_dummies(train['Income'])], axis = 1)
-train = train.rename(columns = { 0: '<10,000', 1: '<15,000', 3: '<20,000', 4: '<25,000', 5: '<35,000', 
-                                      6: '<50,000',  7: '<75,000',  6: '75,000+'})
-
-## Fruits and Veggies
-train['Fruits+Veggies'] = np.where((train['Fruits'] == 1) & (train['Veggies'] == 1), 1, 0)
-
-## Health care issues
-train['HealthCareIssues'] = np.where((train['AnyHealthcare'] == 0) & (train['NoDocbcCost'] == 0), 1, 0)
-
-## Poor diet
-train['PoorDiet'] = np.where((train['Fruits'] == 0) & (train['Veggies'] == 0) & 
-                                (train['HvyAlcoholConsump'] == 1), 1, 0)
+train = train.rename(columns = { 1: '<10,000', 2: '<15,000', 3: '<20,000', 4: '<25,000', 5: '<35,000', 
+                                      6: '<50,000',  7: '<75,000',  8: '75,000+'})
 
 ## Other
 train['MentHlth_cat'] = np.where((train.MentHlth <=10), 0, 
@@ -115,6 +92,20 @@ train['Tree_6'] = np.where((train['Interaction_2'] > 0.5) & (train['Interaction_
 train['Tree_7'] = np.where((train['Interaction_2'] > 0.5) & (train['Interaction_5'] > 3.5) & (train['Log_BMI'] <= 3.481), 1, 0)
 train['Tree_8'] = np.where((train['Interaction_2'] > 0.5) & (train['Interaction_5'] > 3.5) & (train['Log_BMI'] > 3.481), 1, 0)
 
+## Printing the first five observations
+print(train.head())
+print(train.shape)
+
+
+## --------------------------------------
+
+## Defining the input and target variables
+X = train.drop(columns = ['Diabetes_012'])
+Y = train['Diabetes_012']
+
+## Splitting the data into training, validation, and testing sets
+X_training, X_validation, Y_training, Y_validation = train_test_split(X, Y, test_size = 0.2, stratify = Y)
+
 ## --------------------------------------
 
 ## Defining all functions
@@ -125,10 +116,10 @@ train['Tree_8'] = np.where((train['Interaction_2'] > 0.5) & (train['Interaction_
 
 def decisionTree(X_training, Y_training):
     
+    ## Defining empty lists to store results
+    variable_support = []
+    
     for i in tqdm(range(0, 10)):
-
-        ## Defining empty lists to store results
-        variable_support = []
 
         ## Defining the binary Y data for the class 0
         Y_training_training = np.where(Y_training == 0, 1, 0)
@@ -182,10 +173,10 @@ def decisionTree(X_training, Y_training):
 
 def randomForest(X_training, Y_training):
     
-    for i in tqdm(range(0, 5)):
-
-        ## Defining empty lists to store results
-        variable_support = []
+    ## Defining empty lists to store results
+    variable_support = []
+    
+    for i in tqdm(range(0, 10)):
 
         ## Defining the binary Y data for the class 0
         Y_training_training = np.where(Y_training == 0, 1, 0)
@@ -238,10 +229,10 @@ def randomForest(X_training, Y_training):
 
 def adaBoost(X_training, Y_training):
     
-    for i in tqdm(range(0, 5)):
-
-        ## Defining empty lists to store results
-        variable_support = []
+    ## Defining empty lists to store results
+    variable_support = []
+    
+    for i in tqdm(range(0, 10)):
 
         ## Defining the binary Y data for the class 0
         Y_training_training = np.where(Y_training == 0, 1, 0)
@@ -294,10 +285,10 @@ def adaBoost(X_training, Y_training):
 
 def gradientBoost(X_training, Y_training):
     
-    for i in tqdm(range(0, 5)):
-
-        ## Defining empty lists to store results
-        variable_support = []
+    ## Defining empty lists to store results
+    variable_support = []
+    
+    for i in tqdm(range(0, 10)):
 
         ## Defining the binary Y data for the class 0
         Y_training_training = np.where(Y_training == 0, 1, 0)
@@ -355,17 +346,17 @@ def supportVector(X_training, Y_training):
     scaler = MinMaxScaler(feature_range = (0,1))
     X_training_svc = scaler.fit_transform(X_training)
     
+    ## Defining empty lists to store results
+    variable_support = []
+    
     
     for i in tqdm(range(0, 5)):
-
-        ## Defining empty lists to store results
-        variable_support = []
 
         ## Defining the binary Y data for the class 0
         Y_training_training = np.where(Y_training == 0, 1, 0)
 
         ## Building the RFECV model
-        svc_rfecv = RFECV(estimator = SVC(), step = 1, min_features_to_select = 2, 
+        svc_rfecv = RFECV(estimator = SVC(kernel = 'linear'), step = 1, min_features_to_select = 2, 
                            cv = 3, scoring = 'f1', n_jobs = -1).fit(X_training_svc, Y_training_training)
 
         ## Appending results to list
@@ -377,7 +368,7 @@ def supportVector(X_training, Y_training):
         Y_training_training = np.where(Y_training == 1, 1, 0)
 
         ## Building the RFECV model
-        svc_rfecv = RFECV(estimator = SVC(), step = 1, min_features_to_select = 2, 
+        svc_rfecv = RFECV(estimator = SVC(kernel = 'linear'), step = 1, min_features_to_select = 2, 
                            cv = 3, scoring = 'f1', n_jobs = -1).fit(X_training_svc, Y_training_training)
 
         ## Appending results to list
@@ -389,7 +380,7 @@ def supportVector(X_training, Y_training):
         Y_training_training = np.where(Y_training == 2, 1, 0)
 
         ## Building the RFECV model
-        svc_rfecv = RFECV(estimator = SVC(), step = 1, min_features_to_select = 2, 
+        svc_rfecv = RFECV(estimator = SVC(kernel = 'linear'), step = 1, min_features_to_select = 2, 
                            cv = 3, scoring = 'f1', n_jobs = -1).fit(X_training_svc, Y_training_training)
 
         ## Appending results to list
@@ -404,7 +395,7 @@ def supportVector(X_training, Y_training):
     support3.to_csv('SVC_RFECV.csv', index = False)
     
     
-## Calling functions
+# Calling functions
 print('\n-- Beginning: RFECV with Decision Tree Classifier --\n')
 decisionTree(X_training, Y_training)
 
@@ -417,5 +408,5 @@ adaBoost(X_training, Y_training)
 print('\n-- Beginning: RFECV with Gradient Boosting Classifier --\n')
 gradientBoost(X_training, Y_training)
 
-print('\n-- Beginning: RFECV with Support Vector Classifier --\n')
-supportVector(X_training, Y_training)
+# print('\n-- Beginning: RFECV with Support Vector Classifier --\n')
+# supportVector(X_training, Y_training)
