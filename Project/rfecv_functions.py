@@ -335,64 +335,6 @@ def gradientBoost(X_training, Y_training):
     
 
 ## --------------------------------------
-
-#####################
-## RFECV with SVC ###
-#####################
-
-def supportVector(X_training, Y_training):
-    
-    ## Scaling the input data
-    scaler = MinMaxScaler(feature_range = (0,1))
-    X_training_svc = scaler.fit_transform(X_training)
-    
-    ## Defining empty lists to store results
-    variable_support = []
-    
-    
-    for i in tqdm(range(0, 5)):
-
-        ## Defining the binary Y data for the class 0
-        Y_training_training = np.where(Y_training == 0, 1, 0)
-
-        ## Building the RFECV model
-        svc_rfecv = RFECV(estimator = SVC(kernel = 'linear'), step = 1, min_features_to_select = 2, 
-                           cv = 3, scoring = 'f1', n_jobs = -1).fit(X_training_svc, Y_training_training)
-
-        ## Appending results to list
-        variable_support.append(svc_rfecv.support_)
-
-        ## ----------------
-
-        ## Defining the binary Y data for the class 1
-        Y_training_training = np.where(Y_training == 1, 1, 0)
-
-        ## Building the RFECV model
-        svc_rfecv = RFECV(estimator = SVC(kernel = 'linear'), step = 1, min_features_to_select = 2, 
-                           cv = 3, scoring = 'f1', n_jobs = -1).fit(X_training_svc, Y_training_training)
-
-        ## Appending results to list
-        variable_support.append(svc_rfecv.support_)
-
-        ## ----------------
-
-        ## Defining the binary Y data for the class 2
-        Y_training_training = np.where(Y_training == 2, 1, 0)
-
-        ## Building the RFECV model
-        svc_rfecv = RFECV(estimator = SVC(kernel = 'linear'), step = 1, min_features_to_select = 2, 
-                           cv = 3, scoring = 'f1', n_jobs = -1).fit(X_training_svc, Y_training_training)
-
-        ## Appending results to list
-        variable_support.append(svc_rfecv.support_)
-        
-    ## Extracting variable selection results
-    support = pd.DataFrame(variable_support, columns = X_training.columns)
-    support2 = 100 * support.apply(np.sum, axis = 0) / support.shape[0]
-    support3 = pd.DataFrame({'Variable': support2.index, 'Score': support2.values})
-    
-    ## Exporting results as a csv file
-    support3.to_csv('SVC_RFECV.csv', index = False)
     
     
 # Calling functions
@@ -407,6 +349,3 @@ adaBoost(X_training, Y_training)
 
 print('\n-- Beginning: RFECV with Gradient Boosting Classifier --\n')
 gradientBoost(X_training, Y_training)
-
-# print('\n-- Beginning: RFECV with Support Vector Classifier --\n')
-# supportVector(X_training, Y_training)
