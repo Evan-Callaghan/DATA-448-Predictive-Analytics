@@ -139,7 +139,7 @@ def clean_method_cabin(data, variable):
 
         ## If travelling individually, assigning x/999/x as value
         if (data.at[item, 'GroupTotal'] == 1): 
-            data.at[item, variable] = 'x/999/x'
+            data.at[item, variable] = 'x/x/x'
 
         ## Otherwise, checking the number of people in travel party
         else:
@@ -149,7 +149,40 @@ def clean_method_cabin(data, variable):
 
             ## If no valid people, assign mode
             if (new_data.shape[0] < 1):
-                data.at[item, variable] = 'x/999/x'
+                data.at[item, variable] = 'x/x/x'
+
+            ## Else, assign value of group member
+            else:
+                data.at[item, variable] = new_data.at[0, variable]
+                
+    ## Returning revised data frame
+    return data
+
+
+
+def clean_method_cabin_2(data, variable):
+    
+    ## Defining a list of indices where variable is missing
+    item_index = data[data[variable] == 'x'].index
+    
+    ## Extracting the mode from the variable of interest
+    mode = data[data[variable] != 'x'][variable].mode()[0]
+
+    for item in item_index:
+
+        ## If travelling individually, assigning mode as value
+        if (data.at[item, 'GroupTotal'] == 1): 
+            data.at[item, variable] = mode
+
+        ## Otherwise, checking the number of people in travel party
+        else:
+
+            ## New data frame for members of the same party 
+            new_data = data[(data['GroupNumber'] == data.at[item, 'GroupNumber']) & (data[variable].notnull())].reset_index(drop = True).head(1)
+
+            ## If no valid people, assign mode
+            if (new_data.shape[0] < 1):
+                data.at[item, variable] = mode
 
             ## Else, assign value of group member
             else:
